@@ -1,2 +1,7 @@
 alesko: 12.85 seconds
 alesko: 0.00 seconds
+katka: 34.27 seconds
+katka: 0.00 seconds
+katka: 44.67 seconds
+katka: 22.99 seconds
+katka: 16.37 seconds

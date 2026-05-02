@@ -23,13 +23,9 @@ def on_word(input: str, text: str):
     return None
 
 
-def load_texts():
+def get_random_text():
     with open("texts.txt", "r") as file:
         texts = [line for line in file.read().splitlines() if line.strip()]
-    return texts
-
-
-def get_random_text(texts):
     return random.choice(texts)
 
 
