@@ -1,8 +1,0 @@
-Katka: LEVEL 1 | 6.08s | 100.0% | 28 slov/min | chyby: 0
-Katka: LEVEL 1 | 7.86s | 100.0% | 24 slov/min | chyby: 0
-Katka: LEVEL 1 | 11.49s | 100.0% | 17 slov/min | chyby: 0
-Katka: LEVEL 2 | 12.52s | 100.0% | 28 slov/min | chyby: 0
-Katka: LEVEL 2 | 11.69s | 100.0% | 37 slov/min | chyby: 0
-Katka: LEVEL 2 | 11.55s | 100.0% | 30 slov/min | chyby: 0
-Katka: LEVEL 2 | 8.96s | 100.0% | 50 slov/min | chyby: 0
-Alesko: LEVEL 2 | 24.58s | 96.9% | 16 slov/min | chyby: 1

@@ -95,36 +95,53 @@ def get_random_text_by_level(level):
 # uloženie skóre
 def write_scoreboard(name, result, level):
 
-    path = os.path.join(os.path.dirname(__file__), "scoreboard.txt")
+    path = os.path.join(os.path.dirname(__file__), "scoreboard.json")
+    texts_path = os.path.join(os.path.dirname(__file__), "texts.json")
 
-    with open(path, "a", encoding="utf-8") as f:
+    with open(texts_path, "r", encoding="utf-8") as f:
 
-        f.write(
-            f"{name}: "
-            f"LEVEL {level} | "
-            f"{result['time']:.2f}s | "
-            f"{result['accuracy']:.1f}% | "
-            f"{result['wpm']} slov/min | "
-            f"chyby: {result['errors']}\n"
-        )
+        texts = json.load(f)
+
+    if level < 1 or level > len(texts):
+
+        return
+
+    with open(path, "r", encoding="utf-8") as f:
+
+        scoreboard = json.load(f)
+
+    entry = {
+        "name": name,
+        "time": result.get("time", 0),
+        "accuracy": result.get("accuracy", 0),
+        "wpm": result.get("wpm", 0),
+        "errors": result.get("errors", 0)
+    }
+
+    level_index = level - 1
+
+    scoreboard[level_index].append(entry)
+
+    scoreboard[level_index].sort(key=lambda x: float(x.get("time", 0)))
+
+    scoreboard[level_index] = scoreboard[level_index][:10]
+
+    with open(path, "w", encoding="utf-8") as f:
+
+        json.dump(scoreboard, f, indent=2)
 
 
 # TOP 10 výsledkov
-def read_sorted_scoreboard():
+def read_sorted_scoreboard(level):
 
-    path = os.path.join(os.path.dirname(__file__), "scoreboard.txt")
+    path = os.path.join(os.path.dirname(__file__), "scoreboard.json")
 
-    try:
+    with open(path, "r", encoding="utf-8") as f:
 
-        with open(path, "r", encoding="utf-8") as f:
+        scoreboard = json.load(f)
 
-            lines = [line for line in f.read().splitlines() if line.strip()]
-
-    except FileNotFoundError:
+    if level < 1 or level > len(scoreboard):
 
         return []
 
-    # zoradenie podľa času
-    lines.sort(key=lambda x: float(x.split("|")[1].replace("s", "").replace("LEVEL 1", "").replace("LEVEL 2", "").replace("LEVEL 3", "").strip()))
-
-    return lines[:10]
+    return scoreboard[level - 1]

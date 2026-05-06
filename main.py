@@ -1,4 +1,7 @@
 import tkinter as tk
+import tkinter.ttk as ttk
+import json
+import os
 import game_logic as logic
 
 lives = 3
@@ -10,6 +13,21 @@ root.title("Typing Game")
 root.geometry("700x500")
 root.configure(bg="#1e1e1e")
 
+style = ttk.Style()
+style.theme_use("clam")
+style.configure(
+    "Score.Treeview",
+    background="#2e2e2e",
+    fieldbackground="#2e2e2e",
+    foreground="white",
+    rowheight=22
+)
+style.configure(
+    "Score.Treeview.Heading",
+    background="#333333",
+    foreground="white"
+)
+
 # farby
 BG = "#1e1e1e"
 FG = "#ffffff"
@@ -18,16 +36,52 @@ ACCENT = "#ff69b4"
 text_var = tk.StringVar(value="Zadaj meno a stlač Start")
 info_var = tk.StringVar(value="")
 
+
+def load_levels():
+
+    path = os.path.join(os.path.dirname(__file__), "texts.json")
+
+    with open(path, "r", encoding="utf-8") as f:
+
+        texts = json.load(f)
+
+    return [str(i + 1) for i in range(len(texts))]
+
+
+level_options = load_levels()
+
+if not level_options:
+
+    level_options = ["1"]
+
+selected_level = tk.IntVar(value=int(level_options[0]))
+level_buttons = []
+LEVEL_BTN_BG = "#2e2e2e"
+LEVEL_BTN_BG_SELECTED = "#444444"
+
 # scoreboard
 def update_scores():
 
-    listbox.delete(0, tk.END)
+    for item in score_table.get_children():
 
-    scores = logic.read_sorted_scoreboard()
+        score_table.delete(item)
 
-    for i in range(len(scores)):
+    scores = logic.read_sorted_scoreboard(selected_level.get())
 
-        listbox.insert(tk.END, f"{i + 1}. {scores[i]}")
+    for i, entry in enumerate(scores, start=1):
+
+        score_table.insert(
+            "",
+            tk.END,
+            values=(
+                i,
+                entry["name"],
+                f"{entry['time']:.2f}",
+                f"{entry['accuracy']:.1f}",
+                entry["wpm"],
+                entry["errors"]
+            )
+        )
 
 
 # štart hry
@@ -47,6 +101,8 @@ def start():
         info_var.set("Zadaj meno")
 
         return
+
+    current_level = selected_level.get()
 
     # LEVELY
     text = logic.get_random_text_by_level(current_level)
@@ -149,6 +205,56 @@ name_entry = tk.Entry(
 name_entry.pack(pady=10)
 
 
+level_frame = tk.Frame(root, bg=BG)
+level_frame.pack(pady=5)
+
+level_label = tk.Label(
+    level_frame,
+    text="Level",
+    font=("Arial", 12),
+    bg=BG,
+    fg=FG
+)
+level_label.pack(side="left", padx=6)
+
+
+def set_level(level):
+
+    global current_level
+
+    current_level = level
+    selected_level.set(level)
+
+    for button, btn_level in level_buttons:
+
+        is_selected = btn_level == level
+        button.configure(
+            bg=LEVEL_BTN_BG_SELECTED if is_selected else LEVEL_BTN_BG,
+            relief="sunken" if is_selected else "raised"
+        )
+
+    update_scores()
+
+
+for option in level_options:
+
+    level_value = int(option)
+
+    button = tk.Button(
+        level_frame,
+        text=option,
+        font=("Arial", 11, "bold"),
+        bg=LEVEL_BTN_BG,
+        fg=FG,
+        activebackground=LEVEL_BTN_BG_SELECTED,
+        activeforeground=FG,
+        width=3,
+        command=lambda value=level_value: set_level(value)
+    )
+    button.pack(side="left", padx=4)
+    level_buttons.append((button, level_value))
+
+
 # START BUTTON
 start_btn = tk.Button(
     root,
@@ -209,16 +315,33 @@ result_label.pack(pady=15)
 
 
 # scoreboard
-listbox = tk.Listbox(
+columns = ("rank", "name", "time", "accuracy", "wpm", "errors")
+
+score_table = ttk.Treeview(
     root,
-    font=("Arial", 12),
-    width=50,
+    columns=columns,
+    show="headings",
     height=8,
-    bg="#2e2e2e",
-    fg="white"
+    style="Score.Treeview"
 )
 
-listbox.pack(pady=10)
+score_table.heading("rank", text="#")
+score_table.heading("name", text="Meno")
+score_table.heading("time", text="Cas (s)")
+score_table.heading("accuracy", text="Presnost %")
+score_table.heading("wpm", text="Slov/min")
+score_table.heading("errors", text="Chyby")
+
+score_table.column("rank", width=40, anchor="center", stretch=False)
+score_table.column("name", width=120, anchor="w")
+score_table.column("time", width=80, anchor="center")
+score_table.column("accuracy", width=90, anchor="center")
+score_table.column("wpm", width=80, anchor="center")
+score_table.column("errors", width=70, anchor="center")
+
+score_table.pack(pady=10)
+
+set_level(selected_level.get())
 
 update_scores()
 
