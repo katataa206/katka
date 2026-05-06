@@ -1,12 +1,11 @@
 import time
 import random
 import os
+import json
 
 start_time = None
 
 # LEVELY
-current_level = 1
-used_texts = []
 
 
 def on_word(typed, text):
@@ -68,54 +67,33 @@ def on_word(typed, text):
 
 
 # LEVELY A TEXTY
-def get_text_by_level():
+def get_random_text_by_level(level):
 
-    global current_level
-    global used_texts
-
-    path = os.path.join(os.path.dirname(__file__), "texts.txt")
+    path = os.path.join(os.path.dirname(__file__), "texts.json")
 
     with open(path, "r", encoding="utf-8") as f:
 
-        lines = [line.strip() for line in f.readlines() if line.strip()]
+        texts = json.load(f)
 
-    # LEVEL 1
-    if current_level == 1:
+    if not texts:
 
-        level_texts = [t for t in lines if len(t) < 25]
+        return ""
 
-    # LEVEL 2
-    elif current_level == 2:
+    if level < 1 or level > len(texts):
 
-        level_texts = [t for t in lines if len(t) >= 25 and len(t) < 45]
+        level = 1
 
-    # LEVEL 3
-    else:
+    level_texts = texts[level - 1]
 
-        level_texts = [t for t in lines if len(t) >= 45]
+    if not level_texts:
 
-    # odstránenie použitých viet
-    available = [t for t in level_texts if t not in used_texts]
+        return ""
 
-    # ďalší level
-    if len(available) == 0:
-
-        current_level += 1
-
-        used_texts = []
-
-        return get_text_by_level()
-
-    # náhodná veta
-    text = random.choice(available)
-
-    used_texts.append(text)
-
-    return text
+    return random.choice(level_texts)
 
 
 # uloženie skóre
-def write_scoreboard(name, result):
+def write_scoreboard(name, result, level):
 
     path = os.path.join(os.path.dirname(__file__), "scoreboard.txt")
 
@@ -123,7 +101,7 @@ def write_scoreboard(name, result):
 
         f.write(
             f"{name}: "
-            f"LEVEL {current_level} | "
+            f"LEVEL {level} | "
             f"{result['time']:.2f}s | "
             f"{result['accuracy']:.1f}% | "
             f"{result['wpm']} slov/min | "

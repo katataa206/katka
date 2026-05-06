@@ -3,6 +3,7 @@ import game_logic as logic
 
 lives = 3
 last_errors = 0
+current_level = 1
 
 root = tk.Tk()
 root.title("Typing Game")
@@ -34,6 +35,7 @@ def start():
 
     global lives
     global last_errors
+    global current_level
 
     lives = 3
     last_errors = 0
@@ -47,9 +49,9 @@ def start():
         return
 
     # LEVELY
-    text = logic.get_text_by_level()
+    text = logic.get_random_text_by_level(current_level)
 
-    text_var.set(f"LEVEL {logic.current_level}\n\n{text}")
+    text_var.set(f"LEVEL {current_level}\n\n{text}")
 
     info_var.set("Životy: 3")
 
@@ -67,6 +69,7 @@ def typing(event=None):
 
     global lives
     global last_errors
+    global current_level
 
     typed = entry.get()
 
@@ -100,10 +103,10 @@ def typing(event=None):
 
         name = name_entry.get().strip()
 
-        logic.write_scoreboard(name, result)
+        logic.write_scoreboard(name, result, current_level)
 
         info_var.set(
-            f"LEVEL {logic.current_level} | "
+            f"LEVEL {current_level} | "
             f"Čas: {result['time']:.2f}s | "
             f"Presnosť: {result['accuracy']:.1f}% | "
             f"Slová/min: {result['wpm']}"
