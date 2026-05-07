@@ -1,5 +1,4 @@
 import tkinter as tk
-import tkinter.ttk as ttk
 import json
 import os
 import game_logic as logic
@@ -12,21 +11,6 @@ root = tk.Tk()
 root.title("Typing Game")
 root.geometry("700x500")
 root.configure(bg="#1e1e1e")
-
-style = ttk.Style()
-style.theme_use("clam")
-style.configure(
-    "Score.Treeview",
-    background="#2e2e2e",
-    fieldbackground="#2e2e2e",
-    foreground="white",
-    rowheight=22
-)
-style.configure(
-    "Score.Treeview.Heading",
-    background="#333333",
-    foreground="white"
-)
 
 # farby
 BG = "#1e1e1e"
@@ -62,25 +46,22 @@ LEVEL_BTN_BG_SELECTED = "#ff85c2"
 # scoreboard
 def update_scores():
 
-    for item in score_table.get_children():
-
-        score_table.delete(item)
+    score_list.delete(0, tk.END)
 
     scores = logic.read_sorted_scoreboard(selected_level.get())
 
+    if not scores:
+
+        score_list.insert(tk.END, "Ziadne skore")
+        return
+
     for i, entry in enumerate(scores, start=1):
 
-        score_table.insert(
-            "",
+        score_list.insert(
             tk.END,
-            values=(
-                i,
-                entry["name"],
-                f"{entry['time']:.2f}",
-                f"{entry['accuracy']:.1f}",
-                entry["wpm"],
-                entry["errors"]
-            )
+            f"{i}. name:{entry['name']} time:{entry['time']:.2f}s "
+            f"accuracy:{entry['accuracy']:.1f}% wpm:{entry['wpm']} "
+            f"errors:{entry['errors']}"
         )
 
 
@@ -208,14 +189,8 @@ name_entry.pack(pady=10)
 level_frame = tk.Frame(root, bg=BG)
 level_frame.pack(pady=5)
 
-level_label = tk.Label(
-    level_frame,
-    text="Level",
-    font=("Arial", 12),
-    bg=BG,
-    fg=FG
-)
-level_label.pack(side="left", padx=6)
+
+
 
 
 def set_level(level):
@@ -299,8 +274,8 @@ entry = tk.Entry(
 
 entry.pack(pady=10)
 
-entry.bind("<KeyRelease>", typing)
 
+entry.bind("<KeyRelease>", typing)
 
 # info
 result_label = tk.Label(
@@ -315,31 +290,20 @@ result_label.pack(pady=15)
 
 
 # scoreboard
-columns = ("rank", "name", "time", "accuracy", "wpm", "errors")
-
-score_table = ttk.Treeview(
+score_list = tk.Listbox(
     root,
-    columns=columns,
-    show="headings",
+    font=("Arial", 11),
+    width=80,
     height=8,
-    style="Score.Treeview"
+    bg="#2e2e2e",
+    fg="white",
+    highlightthickness=1,
+    highlightbackground="#333333",
+    selectbackground="#444444",
+    activestyle="none"
 )
 
-score_table.heading("rank", text="#")
-score_table.heading("name", text="Meno")
-score_table.heading("time", text="Cas (s)")
-score_table.heading("accuracy", text="Presnost %")
-score_table.heading("wpm", text="Slov/min")
-score_table.heading("errors", text="Chyby")
-
-score_table.column("rank", width=40, anchor="center", stretch=False)
-score_table.column("name", width=120, anchor="w")
-score_table.column("time", width=80, anchor="center")
-score_table.column("accuracy", width=90, anchor="center")
-score_table.column("wpm", width=80, anchor="center")
-score_table.column("errors", width=70, anchor="center")
-
-score_table.pack(pady=10)
+score_list.pack(pady=10)
 
 set_level(selected_level.get())
 
