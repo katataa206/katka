@@ -56,8 +56,8 @@ if not level_options:
 
 selected_level = tk.IntVar(value=int(level_options[0]))
 level_buttons = []
-LEVEL_BTN_BG = "#2e2e2e"
-LEVEL_BTN_BG_SELECTED = "#444444"
+LEVEL_BTN_BG = "#ff69b4"
+LEVEL_BTN_BG_SELECTED = "#ff85c2"
 
 # scoreboard
 def update_scores():
@@ -229,8 +229,8 @@ def set_level(level):
 
         is_selected = btn_level == level
         button.configure(
-            bg=LEVEL_BTN_BG_SELECTED if is_selected else LEVEL_BTN_BG,
-            relief="sunken" if is_selected else "raised"
+            bg=LEVEL_BTN_BG if is_selected else LEVEL_BTN_BG_SELECTED,
+           
         )
 
     update_scores()
@@ -242,12 +242,12 @@ for option in level_options:
 
     button = tk.Button(
         level_frame,
-        text=option,
+        text="level "+ option,
         font=("Arial", 11, "bold"),
         bg=LEVEL_BTN_BG,
-        fg=FG,
+        fg=BG,
         activebackground=LEVEL_BTN_BG_SELECTED,
-        activeforeground=FG,
+        activeforeground=BG,
         width=3,
         command=lambda value=level_value: set_level(value)
     )
