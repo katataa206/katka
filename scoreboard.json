@@ -1,6 +1,20 @@
 [
   [
     {
+      "name": "KATKA",
+      "time": 3.275653123855591,
+      "accuracy": 100.0,
+      "wpm": 51,
+      "errors": 0
+    },
+    {
+      "name": "sd c",
+      "time": 4.298960208892822,
+      "accuracy": 100.0,
+      "wpm": 39,
+      "errors": 0
+    },
+    {
       "name": "sd",
       "time": 5.168368816375732,
       "accuracy": 100.0,
@@ -15,8 +29,36 @@
       "errors": 1
     },
     {
+      "name": "katka",
+      "time": 5.652765989303589,
+      "accuracy": 100.0,
+      "wpm": 30,
+      "errors": 0
+    },
+    {
+      "name": "fd",
+      "time": 5.784151077270508,
+      "accuracy": 100.0,
+      "wpm": 33,
+      "errors": 0
+    },
+    {
       "name": "Katataa",
       "time": 6.117293834686279,
+      "accuracy": 100.0,
+      "wpm": 27,
+      "errors": 0
+    },
+    {
+      "name": "katka",
+      "time": 6.20966911315918,
+      "accuracy": 100.0,
+      "wpm": 31,
+      "errors": 0
+    },
+    {
+      "name": "KATKA",
+      "time": 7.061450958251953,
       "accuracy": 100.0,
       "wpm": 27,
       "errors": 0
@@ -27,15 +69,45 @@
       "accuracy": 100.0,
       "wpm": 23,
       "errors": 0
-    },
-    {
-      "name": "ahoj",
-      "time": 11.733850002288818,
-      "accuracy": 93.75,
-      "wpm": 16,
-      "errors": 1
     }
   ],
-  [],
-  []
+  [
+    {
+      "name": "katka",
+      "time": 11.075585126876831,
+      "accuracy": 93.75,
+      "wpm": 35,
+      "errors": 2
+    },
+    {
+      "name": "Katka",
+      "time": 17.968507051467896,
+      "accuracy": 100.0,
+      "wpm": 25,
+      "errors": 0
+    }
+  ],
+  [
+    {
+      "name": "KATKA",
+      "time": 16.190574884414673,
+      "accuracy": 100.0,
+      "wpm": 33,
+      "errors": 0
+    },
+    {
+      "name": "Katka",
+      "time": 19.837678909301758,
+      "accuracy": 100.0,
+      "wpm": 25,
+      "errors": 0
+    },
+    {
+      "name": "Katka",
+      "time": 23.64718794822693,
+      "accuracy": 95.55555555555556,
+      "wpm": 23,
+      "errors": 2
+    }
+  ]
 ]

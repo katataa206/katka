@@ -1,6 +1,4 @@
 import tkinter as tk
-import json
-import os
 import game_logic as logic
 
 lives = 3
@@ -12,7 +10,7 @@ root.title("Typing Game")
 root.geometry("700x500")
 root.configure(bg="#1e1e1e")
 
-# farby
+
 BG = "#1e1e1e"
 FG = "#ffffff"
 ACCENT = "#ff69b4"
@@ -20,52 +18,27 @@ ACCENT = "#ff69b4"
 text_var = tk.StringVar(value="Zadaj meno a stlač Start")
 info_var = tk.StringVar(value="")
 
+level_count = len(logic.load_texts())
 
-def load_levels():
-
-    path = os.path.join(os.path.dirname(__file__), "texts.json")
-
-    with open(path, "r", encoding="utf-8") as f:
-
-        texts = json.load(f)
-
-    return [str(i + 1) for i in range(len(texts))]
-
-
-level_options = load_levels()
-
-if not level_options:
-
-    level_options = ["1"]
-
-selected_level = tk.IntVar(value=int(level_options[0]))
+selected_level = tk.IntVar(value=1)
 level_buttons = []
 LEVEL_BTN_BG = "#ff69b4"
 LEVEL_BTN_BG_SELECTED = "#ff85c2"
 
-# scoreboard
+
 def update_scores():
 
     score_list.delete(0, tk.END)
-
     scores = logic.read_sorted_scoreboard(selected_level.get())
 
-    if not scores:
-
-        score_list.insert(tk.END, "Ziadne skore")
-        return
-
     for i, entry in enumerate(scores, start=1):
-
         score_list.insert(
             tk.END,
-            f"{i}. name:{entry['name']} time:{entry['time']:.2f}s "
-            f"accuracy:{entry['accuracy']:.1f}% wpm:{entry['wpm']} "
-            f"errors:{entry['errors']}"
+            f"{i}. Meno: {entry['name']} | Čas: {entry['time']:.2f}s "
+            f"| Presnosť: {entry['accuracy']:.1f}% | Slová/min: {entry['wpm']} "
+            f"| Chyby: {entry['errors']}"
         )
 
-
-# štart hry
 def start():
 
     global lives
@@ -78,30 +51,19 @@ def start():
     name = name_entry.get().strip()
 
     if name == "":
-
         info_var.set("Zadaj meno")
-
         return
 
     current_level = selected_level.get()
 
-    # LEVELY
     text = logic.get_random_text_by_level(current_level)
-
     text_var.set(f"LEVEL {current_level}\n\n{text}")
-
     info_var.set("Životy: 3")
-
     entry.config(state="normal")
-
     entry.delete(0, tk.END)
-
     logic.on_word("", text)
-
     entry.focus()
 
-
-# písanie
 def typing(event=None):
 
     global lives
@@ -109,35 +71,25 @@ def typing(event=None):
     global current_level
 
     typed = entry.get()
-
     text = text_var.get().split("\n\n")[1]
-
     result = logic.on_word(typed, text)
 
     if result is None:
-
         return
 
     errors = result["errors"]
 
-    # život sa odčíta iba pri novej chybe
     if errors > last_errors:
-
         lives -= 1
-
         last_errors = errors
 
     if lives <= 0:
-
         info_var.set("GAME OVER")
-
         entry.config(state="disabled")
-
         return
 
-    # koniec hry
+    
     if result["finished"]:
-
         name = name_entry.get().strip()
 
         logic.write_scoreboard(name, result, current_level)
@@ -146,19 +98,16 @@ def typing(event=None):
             f"LEVEL {current_level} | "
             f"Čas: {result['time']:.2f}s | "
             f"Presnosť: {result['accuracy']:.1f}% | "
-            f"Slová/min: {result['wpm']}"
+            f"Slová/min: {result['wpm']} | "
+            f"Chyby: {result['errors']}"
         )
 
         entry.config(state="disabled")
-
         update_scores()
-
         return
 
     info_var.set(f"Životy: {lives}")
 
-
-# názov
 title = tk.Label(
     root,
     text="TYPING GAME",
@@ -169,8 +118,6 @@ title = tk.Label(
 
 title.pack(pady=15)
 
-
-# meno
 name_entry = tk.Entry(
     root,
     font=("Arial", 14),
@@ -185,39 +132,20 @@ name_entry = tk.Entry(
 
 name_entry.pack(pady=10)
 
-
 level_frame = tk.Frame(root, bg=BG)
 level_frame.pack(pady=5)
 
-
-
-
-
 def set_level(level):
-
     global current_level
-
     current_level = level
     selected_level.set(level)
-
-    for button, btn_level in level_buttons:
-
-        is_selected = btn_level == level
-        button.configure(
-            bg=LEVEL_BTN_BG if is_selected else LEVEL_BTN_BG_SELECTED,
-           
-        )
-
     update_scores()
 
-
-for option in level_options:
-
-    level_value = int(option)
+for level_value in range(1, level_count + 1):
 
     button = tk.Button(
         level_frame,
-        text="level "+ option,
+        text=f"level {level_value}",
         font=("Arial", 11, "bold"),
         bg=LEVEL_BTN_BG,
         fg=BG,
@@ -229,8 +157,6 @@ for option in level_options:
     button.pack(side="left", padx=4)
     level_buttons.append((button, level_value))
 
-
-# START BUTTON
 start_btn = tk.Button(
     root,
     text="Start",
@@ -243,8 +169,6 @@ start_btn = tk.Button(
 
 start_btn.pack(pady=10)
 
-
-# text
 text_label = tk.Label(
     root,
     textvariable=text_var,
@@ -257,8 +181,6 @@ text_label = tk.Label(
 
 text_label.pack(pady=20)
 
-
-# input
 entry = tk.Entry(
     root,
     font=("Arial", 16),
@@ -273,11 +195,8 @@ entry = tk.Entry(
 )
 
 entry.pack(pady=10)
-
-
 entry.bind("<KeyRelease>", typing)
 
-# info
 result_label = tk.Label(
     root,
     textvariable=info_var,
@@ -288,8 +207,6 @@ result_label = tk.Label(
 
 result_label.pack(pady=15)
 
-
-# scoreboard
 score_list = tk.Listbox(
     root,
     font=("Arial", 11),
@@ -304,9 +221,6 @@ score_list = tk.Listbox(
 )
 
 score_list.pack(pady=10)
-
 set_level(selected_level.get())
-
 update_scores()
-
 root.mainloop()
